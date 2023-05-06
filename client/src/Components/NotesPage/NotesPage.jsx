@@ -86,15 +86,35 @@ const NotesPage = (props) => {
         ]
     );
 
-    let refs = {
+    const [newNote, setNewNote] = useState({});
+
+    const refs = {
         btnRef: useRef(null),
         textRef: useRef(null),
         titleRef: useRef(null),
         themeRef: useRef(null)
     }
 
-    useEffect(()=>{
+    useEffect(() => {
+        refs.titleRef.current.addEventListener('input', () => {
+            console.log(newNote)
+            setNewNote({
+                ...newNote,
+                title: refs.titleRef.current.value
+            });
+        });
+
+        refs.textRef.current.addEventListener('input', () => {
+            console.log(newNote)
+            setNewNote({
+                ...newNote,
+                text: refs.textRef.current.value
+            });
+        });
+
         refs.btnRef.current.addEventListener('click', () => {
+            console.log('click');
+
             let dateNow = new Date();
             let time = `${timeFormat(dateNow.getHours())}:${timeFormat(dateNow.getMinutes())}`;
             let date = `${timeFormat(dateNow.getDate())}.${timeFormat(dateNow.getMonth())}.${timeFormat(dateNow.getFullYear())}`;
@@ -102,26 +122,25 @@ const NotesPage = (props) => {
             createNote([
                 ...notesStore,
                 {
-                    title: refs.titleRef.current.value,
-                    text: refs.textRef.current.value,
+                    ...newNote,
                     time: `${time} | ${date}`,
                     theme: refs.themeRef.current.value
                 }
             ])
 
-            console.log(notesStore);
+            setNewNote({});
 
             refs.titleRef.current.value = '';
             refs.textRef.current.value = '';
         });
-    },);
+    }, []);
 
     return(
         <main>
-            <Section classForSection='notes_section' keyForSection='notes' content={
+            <Section classForSection='notes_section' key='notes' content={
                 <NotesList notes={notesStore}/>
             }/>
-            <Section classForSection='form_section' keyForSection='form' content={[
+            <Section classForSection='form_section' key='form' content={[
                 <Form 
                     titleRef={refs.titleRef}
                     textRef={refs.textRef}
